@@ -16,7 +16,7 @@ resource "azurerm_virtual_network" "terraformnetwork" {
     name                = "Vnet1"
     address_space       = ["10.0.0.0/16"]
     location            = "northeurope"
-    resource_group_name = "azurerm_resource_group.terraformgroup.name"
+    resource_group_name = "${azurerm_resource_group.terraformgroup.name}"
 
     tags = {
         environment = "Terraform Demo"
@@ -25,26 +25,26 @@ resource "azurerm_virtual_network" "terraformnetwork" {
 
 resource "azurerm_subnet" "terraformsubnet" {
     name                 = "Subnet1"
-    resource_group_name  = "azurerm_resource_group.terraformgroup.name"
-    virtual_network_name = "azurerm_virtual_network.terraformnetwork.name"
+    resource_group_name  = "${azurerm_resource_group.terraformgroup.name}"
+    virtual_network_name = "${azurerm_virtual_network.terraformnetwork.name}"
     address_prefix       = "10.0.2.0/24"
 }
 
 resource "azurerm_public_ip" "terraformpublicip" {
     name                         = "PublicIP"
     location                     = "northeurope"
-    resource_group_name          = "azurerm_resource_group.terraformgroup.name"
+    resource_group_name          = "${azurerm_resource_group.terraformgroup.name}"
     allocation_method            = "Dynamic"
 
     tags = {
-        environment = "Terraform Demo"
+       environment = "Terraform Demo"
     }
 }
 
 resource "azurerm_network_security_group" "terraformnsg" {
     name                = "NetworkSecurityGroup"
     location            = "northeurope"
-    resource_group_name = "azurerm_resource_group.terraformgroup.name"
+    resource_group_name = "${azurerm_resource_group.terraformgroup.name}"
     
     security_rule {
         name                       = "SSH"
@@ -58,6 +58,7 @@ resource "azurerm_network_security_group" "terraformnsg" {
         destination_address_prefix = "*"
     }
 
+
     tags = {
         environment = "Terraform Demo"
     }
@@ -66,7 +67,7 @@ resource "azurerm_network_security_group" "terraformnsg" {
 resource "azurerm_network_interface" "terraformnic" {
     name                        = "NIC"
     location                    = "northeurope"
-    resource_group_name         = "azurerm_resource_group.terraformgroup.name"
+    resource_group_name         = "${azurerm_resource_group.terraformgroup.name}"
     network_security_group_id   = "${azurerm_network_security_group.terraformnsg.id}"
 
     ip_configuration {
@@ -82,10 +83,11 @@ resource "azurerm_network_interface" "terraformnic" {
 }
 
 resource "azurerm_virtual_machine" "terraformvm" {
-    name                  = "VM"
+    name                  = "TerraVM"
     location              = "northeurope"
-    resource_group_name   = "azurerm_resource_group.terraformgroup.name"
-    network_interface_ids = ["azurerm_network_interface.terraformnic.id"]
+    resource_group_name   = "${azurerm_resource_group.terraformgroup.name}"
+    network_interface_ids =  ["${azurerm_network_interface.terraformnic.id}"]
+  
     vm_size               = "Standard_DS1_v2"
 
     storage_os_disk {
@@ -103,7 +105,7 @@ resource "azurerm_virtual_machine" "terraformvm" {
     }
 
     os_profile {
-        computer_name  = "vm"
+        computer_name  = "terravm"
         admin_username = "azureuser"
     }
 
@@ -111,7 +113,7 @@ resource "azurerm_virtual_machine" "terraformvm" {
         disable_password_authentication = true
         ssh_keys {
             path     = "/home/azureuser/.ssh/authorized_keys"
-            key_data = "ssh-rsa AAAAB3Nz{snip}hwhqT9h"
+            key_data = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3iULxq5Esofx/hKV/s9dV/LdNn0yeVKTD8J7ZwqKA7Z3UCQjX7fBAbZRAi/coWnLE89/BTYZYZAdBxYiTVtpIXa8rBnLycme6gauK74gzyVO4a/hk3I0+tec804PI+4eA78FFdrXkjz5Md4aSLsAlMe1JYc56uh2OyHtMaQ9RhYXL21TdReVMrBppxXHDVu39djnO13h7HCi4VMGR+rfZb+5eSt8zh35QzhR5Y1ot2tibow54Ua8NANsxxm/D32PBcKNzzf2uJod0jJtr2Si+a8qL8sikz/VJZcVm8DpZe3YmXzBhf8xldGJ4dnPLODJvls2EUmRmtrOmrT0f3mE9 michael@cc-1beb5c05-6c97b9b678-jj5l5"
         }
     }
     
