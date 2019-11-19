@@ -1,2 +1,9 @@
-# Azure_Terraform
-Deploy a linux VM in to Azure, create vnet, subnet, nsg, attach nic, firewall rules
+# Terraform Azure create Ubuntu VM
+Terraform Azure project will deploy the following....
+
+- Deploy Ubuntu VM, 
+- Create Resource Group, 
+- Create vNet, 
+- Create NSG, 
+- Create NIC, 
+
